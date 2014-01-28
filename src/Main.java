@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.Random;
 
 import weka.classifiers.Classifier;
@@ -5,6 +8,9 @@ import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.classifiers.trees.J48;
+import weka.clusterers.ClusterEvaluation;
+import weka.clusterers.Clusterer;
+import weka.clusterers.EM;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
@@ -31,26 +37,32 @@ public class Main {
 				train.setClassIndex(train.numAttributes()-1);
 			if( test.classIndex() == -1 )
 				test.setClassIndex(test.numAttributes()-1);
-			
-			System.out.println("Train NaiveBayes");
+
 			Filter filter = new StringToWordVector();
 			
-			FilteredClassifier cls = new FilteredClassifier();
-			cls.setFilter(filter);
-			cls.setClassifier(new NaiveBayes());
-			
-			cls.buildClassifier(train);
-			
-			System.out.println("Evaluate with test");
-			Evaluation eval = new Evaluation(train);
-			eval.evaluateModel(cls, test);
-			System.out.println(eval.toSummaryString());
+			naiveBayesClassifier(train, test, filter);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+	}
+
+	private static void naiveBayesClassifier(Instances train, Instances test, Filter filter)
+			throws Exception {
+		System.out.println("Train NaiveBayes");
+		
+		FilteredClassifier cls = new FilteredClassifier();
+		cls.setFilter(filter);
+		cls.setClassifier(new NaiveBayes());
+		
+		cls.buildClassifier(train);
+		
+		System.out.println("Evaluate with test");
+		Evaluation eval = new Evaluation(train);
+		eval.evaluateModel(cls, test);
+		System.out.println(eval.toSummaryString());
 	}
 
 	private static void u45onDiabetesData() throws Exception {
